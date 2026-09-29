@@ -13,12 +13,26 @@ const app = express();
 // Connect to MongoDB Atlas
 connectDB();
 
-// --- STRICT CORS CONFIGURATION FOR DEPLOYMENT ---
+// --- DYNAMIC CORS CONFIGURATION ---
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://plan-me-seven.vercel.app', 
+  'https://plan-b1tp85kov-om-soni1.vercel.app',
+  process.env.FRONTEND_URL // Keeps your env variable working
+];
+
 const corsOptions = {
-  // Allow the production frontend URL, fallback to localhost for development
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or postman) 
+    // OR if the origin is in our allowed list
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'], // Crucial for Clerk auth tokens
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   optionsSuccessStatus: 200
 };
