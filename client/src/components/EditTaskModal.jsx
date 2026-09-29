@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import { X, Clock, CheckCircle2 } from 'lucide-react';
-import { getCategories, ICON_MAP } from '../utils/categories';
+import { X, Clock } from 'lucide-react';
+import { ICON_MAP } from '../utils/categories';
+import { useCategories } from '../hooks/useCategories';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function EditTaskModal({ isOpen, task, onClose, onSuccess }) {
-  const categories = getCategories();
+  
+  // Use the hook to fetch the user's custom categories from DB
+  const { categories } = useCategories();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -129,9 +133,10 @@ export default function EditTaskModal({ isOpen, task, onClose, onSuccess }) {
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Date & Timing</label>
               <input
                 type="date"
+                required
                 value={formData.task_date}
                 onChange={(e) => setFormData({ ...formData, task_date: e.target.value })}
-                className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm outline-none mb-3 [color-scheme:light] dark:[color-scheme:dark]"
+                className="bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm outline-none mb-3 w-full sm:w-auto [color-scheme:light] dark:[color-scheme:dark]"
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -140,14 +145,14 @@ export default function EditTaskModal({ isOpen, task, onClose, onSuccess }) {
                   <span className="text-xs text-gray-400 font-semibold block mb-1">Start Time</span>
                   <div className="flex items-center gap-1">
                     <Clock size={16} className="text-gray-400 mr-1" />
-                    <select value={startHour} onChange={e => setStartHour(e.target.value)} className="bg-transparent font-bold text-sm outline-none cursor-pointer">
-                      {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(h => <option key={h} value={h} className="bg-white dark:bg-gray-800">{h}</option>)}
+                    <select value={startHour} onChange={e => setStartHour(e.target.value)} className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-bold text-sm outline-none cursor-pointer rounded p-1">
+                      {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(h => <option key={h} value={h}>{h}</option>)}
                     </select>
-                    <span>:</span>
-                    <select value={startMinute} onChange={e => setStartMinute(e.target.value)} className="bg-transparent font-bold text-sm outline-none cursor-pointer">
-                      {['00', '15', '30', '45'].map(m => <option key={m} value={m} className="bg-white dark:bg-gray-800">{m}</option>)}
+                    <span className="font-bold">:</span>
+                    <select value={startMinute} onChange={e => setStartMinute(e.target.value)} className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-bold text-sm outline-none cursor-pointer rounded p-1">
+                      {['00', '15', '30', '45'].map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
-                    <select value={startAmPm} onChange={e => setStartAmPm(e.target.value)} className="bg-blue-50 dark:bg-blue-900/40 text-blue-600 font-bold text-xs rounded p-1 outline-none ml-auto cursor-pointer">
+                    <select value={startAmPm} onChange={e => setStartAmPm(e.target.value)} className="bg-blue-50 dark:bg-blue-900/40 text-blue-600 font-bold text-xs rounded p-1.5 outline-none ml-auto cursor-pointer">
                       <option value="AM" className="bg-white dark:bg-gray-800">AM</option>
                       <option value="PM" className="bg-white dark:bg-gray-800">PM</option>
                     </select>
@@ -159,14 +164,14 @@ export default function EditTaskModal({ isOpen, task, onClose, onSuccess }) {
                   <span className="text-xs text-gray-400 font-semibold block mb-1">End Time</span>
                   <div className="flex items-center gap-1">
                     <Clock size={16} className="text-gray-400 mr-1" />
-                    <select value={endHour} onChange={e => setEndHour(e.target.value)} className="bg-transparent font-bold text-sm outline-none cursor-pointer">
-                      {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(h => <option key={h} value={h} className="bg-white dark:bg-gray-800">{h}</option>)}
+                    <select value={endHour} onChange={e => setEndHour(e.target.value)} className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-bold text-sm outline-none cursor-pointer rounded p-1">
+                      {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map(h => <option key={h} value={h}>{h}</option>)}
                     </select>
-                    <span>:</span>
-                    <select value={endMinute} onChange={e => setEndMinute(e.target.value)} className="bg-transparent font-bold text-sm outline-none cursor-pointer">
-                      {['00', '15', '30', '45'].map(m => <option key={m} value={m} className="bg-white dark:bg-gray-800">{m}</option>)}
+                    <span className="font-bold">:</span>
+                    <select value={endMinute} onChange={e => setEndMinute(e.target.value)} className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-bold text-sm outline-none cursor-pointer rounded p-1">
+                      {['00', '15', '30', '45'].map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
-                    <select value={endAmPm} onChange={e => setEndAmPm(e.target.value)} className="bg-blue-50 dark:bg-blue-900/40 text-blue-600 font-bold text-xs rounded p-1 outline-none ml-auto cursor-pointer">
+                    <select value={endAmPm} onChange={e => setEndAmPm(e.target.value)} className="bg-blue-50 dark:bg-blue-900/40 text-blue-600 font-bold text-xs rounded p-1.5 outline-none ml-auto cursor-pointer">
                       <option value="AM" className="bg-white dark:bg-gray-800">AM</option>
                       <option value="PM" className="bg-white dark:bg-gray-800">PM</option>
                     </select>
@@ -175,40 +180,44 @@ export default function EditTaskModal({ isOpen, task, onClose, onSuccess }) {
               </div>
             </div>
 
-            {/* Custom Categories */}
+            {/* Custom Categories (Icons Only) */}
             <div>
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Category</label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="flex flex-wrap gap-3">
                 {categories.map(cat => {
                   const Icon = ICON_MAP[cat.icon] || Clock;
                   const isSelected = formData.category === cat.id;
                   return (
-                    <div
+                    <button
                       key={cat.id}
+                      type="button"
+                      title={cat.label} // Shows name on hover/long-press
                       onClick={() => setFormData({ ...formData, category: cat.id })}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl cursor-pointer border transition-all ${isSelected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm text-blue-600' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}
+                      className={`flex items-center justify-center w-12 h-12 rounded-2xl border transition-all ${
+                        isSelected 
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-md scale-105' 
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                      }`}
                     >
-                      <Icon size={16} />
-                      <span className="text-xs font-semibold truncate">{cat.label}</span>
-                    </div>
+                      <Icon size={24} />
+                    </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Priority & Status (Only Edit has Status) */}
+            {/* Priority & Status */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Priority</label>
-                <div className="space-y-1.5">
+                <div className="grid grid-cols-3 gap-2">
                   {priorities.map(p => (
                     <div
                       key={p.id}
                       onClick={() => setFormData({ ...formData, priority: p.id })}
-                      className={`flex items-center justify-between p-2 rounded-xl cursor-pointer border text-xs font-bold uppercase transition-all ${formData.priority === p.id ? p.style : 'border-gray-200 dark:border-gray-700 opacity-60'}`}
+                      className={`flex items-center justify-center p-2 rounded-xl cursor-pointer border text-xs font-bold uppercase transition-all ${formData.priority === p.id ? p.style + ' shadow-sm' : 'border-gray-200 dark:border-gray-700 opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                     >
                       <span>{p.label}</span>
-                      {formData.priority === p.id && <CheckCircle2 size={14} />}
                     </div>
                   ))}
                 </div>
@@ -216,14 +225,18 @@ export default function EditTaskModal({ isOpen, task, onClose, onSuccess }) {
 
               <div>
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Task Status</label>
-                <div className="space-y-1.5">
+                <div className="grid grid-cols-3 gap-2">
                   {['pending', 'ongoing', 'completed'].map(st => (
                     <div
                       key={st}
                       onClick={() => setFormData({ ...formData, status: st })}
-                      className={`p-2 rounded-xl cursor-pointer border text-xs font-bold capitalize transition-all ${formData.status === st ? 'bg-blue-600 text-white border-blue-600 shadow' : 'border-gray-200 dark:border-gray-700'}`}
+                      className={`flex items-center justify-center p-2 rounded-xl cursor-pointer border text-[11px] font-bold capitalize transition-all ${
+                        formData.status === st 
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-md' 
+                          : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                      }`}
                     >
-                      {st} {st === 'ongoing' && '(Focus)'}
+                      {st}
                     </div>
                   ))}
                 </div>
@@ -233,14 +246,14 @@ export default function EditTaskModal({ isOpen, task, onClose, onSuccess }) {
         </div>
 
         <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 flex justify-end gap-3">
-          <button type="button" onClick={onClose} className="px-5 py-2 text-sm font-semibold text-gray-500 rounded-full">
+          <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">
             Cancel
           </button>
           <button
             type="submit"
             form="edit-task-form"
             disabled={statusState === 'saving' || !formData.title.trim()}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full transition-all shadow-md"
+            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-full transition-all shadow-md active:scale-95 disabled:opacity-50"
           >
             {statusState === 'saving' ? 'Saving...' : 'Save Changes'}
           </button>

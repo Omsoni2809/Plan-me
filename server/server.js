@@ -13,7 +13,17 @@ const app = express();
 // Connect to MongoDB Atlas
 connectDB();
 
-app.use(cors());
+// --- STRICT CORS CONFIGURATION FOR DEPLOYMENT ---
+const corsOptions = {
+  // Allow the production frontend URL, fallback to localhost for development
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', 
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // Crucial for Clerk auth tokens
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // System Route
@@ -28,5 +38,5 @@ app.use('/api/ai', aiRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
